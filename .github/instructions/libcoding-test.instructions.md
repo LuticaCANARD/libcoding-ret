@@ -1144,3 +1144,4 @@ SO THAT the mentor cannot see my message.
 - 4. SQLite를 사용한다.
 - 5. prisma를 사용하여 backend를 사용한다.
 - 6. 테스팅은 일단 맨 처음이 완성되고 한다.
+- 7. gitignore은 자유로 수정가능하나, .env는 수정 이전에 사유를 문의하라.

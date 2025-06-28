@@ -1,0 +1,25 @@
+{
+  "name": "mentor-mentee-matching",
+  "version": "1.0.0",
+  "description": "Mentor-Mentee Matching Platform",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "start": "turbo run build && turbo run start --parallel",
+    "clean": "turbo run clean",
+    "lint": "turbo run lint",
+    "test": "turbo run test"
+  },
+  "devDependencies": {
+    "turbo": "^1.10.7"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}

@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   // "mentor" or "mentee"
+  bio       String?
+  skills    String?  // JSON string for array of skills (for mentors)
+  image     Bytes?   // Store image as binary data
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations for match requests
+  sentRequests     MatchRequest[] @relation("MenteeSentRequests")
+  receivedRequests MatchRequest[] @relation("MentorReceivedRequests")
+
+  @@map("users")
+}
+
+model MatchRequest {
+  id       Int    @id @default(autoincrement())
+  mentorId Int
+  menteeId Int
+  message  String
+  status   String @default("pending") // "pending", "accepted", "rejected", "cancelled"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  mentor User @relation("MentorReceivedRequests", fields: [mentorId], references: [id], onDelete: Cascade)
+  mentee User @relation("MenteeSentRequests", fields: [menteeId], references: [id], onDelete: Cascade)
+
+  @@unique([mentorId, menteeId])
+  @@map("match_requests")
+}
