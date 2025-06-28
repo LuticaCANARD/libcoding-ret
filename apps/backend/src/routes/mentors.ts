@@ -45,7 +45,7 @@ router.get('/mentors', authenticateToken, requireRole('mentee'), async (req: Req
       orderBy: orderByClause
     });
 
-    const response = mentors.map(mentor => ({
+    const response = mentors.map((mentor: any) => ({
       id: mentor.id,
       email: mentor.email,
       role: mentor.role,

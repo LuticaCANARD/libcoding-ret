@@ -87,7 +87,7 @@ router.get('/match-requests/incoming', authenticateToken, requireRole('mentor'),
       orderBy: { createdAt: 'desc' }
     });
 
-    const response = requests.map(request => ({
+    const response = requests.map((request: any) => ({
       id: request.id,
       mentorId: request.mentorId,
       menteeId: request.menteeId,
@@ -134,7 +134,7 @@ router.get('/match-requests/outgoing', authenticateToken, requireRole('mentee'),
       orderBy: { createdAt: 'desc' }
     });
 
-    const response = requests.map(request => ({
+    const response = requests.map((request: any) => ({
       id: request.id,
       mentorId: request.mentorId,
       menteeId: request.menteeId,
@@ -206,7 +206,7 @@ router.put('/match-requests/:id/accept', authenticateToken, requireRole('mentor'
     }
 
     // Accept this request and reject all other pending requests to this mentor
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: any) => {
       // Accept the current request
       await tx.matchRequest.update({
         where: { id: requestId },
