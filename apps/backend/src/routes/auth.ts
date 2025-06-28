@@ -37,9 +37,40 @@ router.post('/signup', signupValidation, handleValidationErrors, async (req: Req
       }
     });
 
+    // Generate JWT token
+    const token = generateToken({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      bio: user.bio,
+      skills: user.skills,
+      image: user.image,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    });
+
+    // Return user info and token (without password)
+    const { password: _, ...userWithoutPassword } = user;
+
     res.status(201).json({
       message: 'User created successfully',
-      userId: user.id
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        profileImageUrl: user.image ? `/api/images/${user.role}/${user.id}` : 
+                        (user.role === 'mentor' ? 
+                         'https://placehold.co/500x500.jpg?text=MENTOR' :
+                         'https://placehold.co/500x500.jpg?text=MENTEE'),
+        expertise: user.role === 'mentor' && user.skills ? JSON.parse(user.skills) : undefined,
+        skillLevel: undefined, // Not implemented yet
+        bio: user.bio || '',
+        createdAt: user.createdAt.toISOString(),
+        updatedAt: user.updatedAt.toISOString()
+      }
     });
   } catch (error) {
     console.error('Signup error:', error);
@@ -81,11 +112,34 @@ router.post('/login', loginValidation, handleValidationErrors, async (req: Reque
       id: user.id,
       name: user.name,
       email: user.email,
-      role: user.role
+      role: user.role,
+      bio: user.bio,
+      skills: user.skills,
+      image: user.image,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
     });
 
+    // Return user info and token
+    const { password: _, ...userWithoutPassword } = user;
+
     res.json({
-      token
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        profileImageUrl: user.image ? `/api/images/${user.role}/${user.id}` : 
+                        (user.role === 'mentor' ? 
+                         'https://placehold.co/500x500.jpg?text=MENTOR' :
+                         'https://placehold.co/500x500.jpg?text=MENTEE'),
+        expertise: user.role === 'mentor' && user.skills ? JSON.parse(user.skills) : undefined,
+        skillLevel: undefined, // Not implemented yet
+        bio: user.bio || '',
+        createdAt: user.createdAt.toISOString(),
+        updatedAt: user.updatedAt.toISOString()
+      }
     });
   } catch (error) {
     console.error('Login error:', error);

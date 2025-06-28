@@ -20,7 +20,9 @@ router.get('/me', authenticateToken, async (req: Request, res: Response) => {
         role: true,
         bio: true,
         skills: true,
-        image: true
+        image: true,
+        createdAt: true,
+        updatedAt: true
       }
     });
 
@@ -30,24 +32,21 @@ router.get('/me', authenticateToken, async (req: Request, res: Response) => {
       });
     }
 
-    // Format response based on role
-    const baseProfile = {
-      name: user.name,
-      bio: user.bio || '',
-      imageUrl: user.image ? `/api/images/${user.role}/${user.id}` : 
-                (user.role === 'mentor' ? 
-                 process.env.MENTOR_PLACEHOLDER_IMAGE_LINK || 'https://placehold.co/500x500.jpg?text=MENTOR' :
-                 process.env.MENTEE_PLACEHOLDER_IMAGE_LINK || 'https://placehold.co/500x500.jpg?text=MENTEE')
-    };
-
+    // Format response to match client User interface
     const response = {
       id: user.id,
       email: user.email,
+      name: user.name,
       role: user.role,
-      profile: user.role === 'mentor' ? {
-        ...baseProfile,
-        skills: user.skills ? JSON.parse(user.skills) : []
-      } : baseProfile
+      profileImageUrl: user.image ? `/api/images/${user.role}/${user.id}` : 
+                      (user.role === 'mentor' ? 
+                       'https://placehold.co/500x500.jpg?text=MENTOR' :
+                       'https://placehold.co/500x500.jpg?text=MENTEE'),
+      expertise: user.role === 'mentor' && user.skills ? JSON.parse(user.skills) : undefined,
+      skillLevel: undefined, // Not implemented yet
+      bio: user.bio || '',
+      createdAt: user.createdAt.toISOString(),
+      updatedAt: user.updatedAt.toISOString()
     };
 
     res.json(response);

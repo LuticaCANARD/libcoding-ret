@@ -16,12 +16,29 @@ export interface JWTPayload {
   jti: string;     // JWT ID
 
   // Custom claims
+  id: number;
   name: string;
   email: string;
   role: 'mentor' | 'mentee';
+  profileImageUrl?: string;
+  expertise?: string[];
+  skillLevel?: string;
+  bio?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export function generateToken(user: { id: number; name: string; email: string; role: string }): string {
+export function generateToken(user: { 
+  id: number; 
+  name: string; 
+  email: string; 
+  role: string;
+  bio?: string | null;
+  skills?: string | null;
+  image?: Buffer | null;
+  createdAt: Date;
+  updatedAt: Date;
+}): string {
   const now = Math.floor(Date.now() / 1000);
   const exp = now + (60 * 60); // 1 hour expiration
 
@@ -35,10 +52,20 @@ export function generateToken(user: { id: number; name: string; email: string; r
     iat: now,
     jti: uuidv4(),
 
-    // Custom claims
+    // Custom claims matching client User interface
+    id: user.id,
     name: user.name,
     email: user.email,
-    role: user.role as 'mentor' | 'mentee'
+    role: user.role as 'mentor' | 'mentee',
+    profileImageUrl: user.image ? `/api/images/${user.role}/${user.id}` : 
+                    (user.role === 'mentor' ? 
+                     'https://placehold.co/500x500.jpg?text=MENTOR' :
+                     'https://placehold.co/500x500.jpg?text=MENTEE'),
+    expertise: user.role === 'mentor' && user.skills ? JSON.parse(user.skills) : undefined,
+    skillLevel: undefined, // Not implemented yet
+    bio: user.bio || '',
+    createdAt: user.createdAt.toISOString(),
+    updatedAt: user.updatedAt.toISOString()
   };
 
   return jwt.sign(payload, JWT_SECRET);
@@ -51,7 +78,7 @@ export function verifyToken(token: string): JWTPayload {
     // Validate required claims
     if (!decoded.iss || !decoded.sub || !decoded.aud || !decoded.exp || 
         !decoded.nbf || !decoded.iat || !decoded.jti || !decoded.name || 
-        !decoded.email || !decoded.role) {
+        !decoded.email || !decoded.role || !decoded.id) {
       throw new Error('Invalid token: missing required claims');
     }
 
