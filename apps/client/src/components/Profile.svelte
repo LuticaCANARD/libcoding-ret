@@ -213,7 +213,6 @@
 
         <div class="detail-section">
           <h4>가입일</h4>
-          <p>{JSON.stringify(currentUser)}</p>
           <p>{new Date(currentUser.createdAt).toLocaleDateString('ko-KR')}</p>
         </div>
       </div>

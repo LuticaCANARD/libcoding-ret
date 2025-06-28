@@ -119,7 +119,7 @@ export async function createMatchRequest(mentorId: number, message?: string): Pr
 }
 
 export async function getUserMatches(): Promise<Match[]> {
-  const response = await apiRequest('/matches');
+  const response = await apiRequest('/match-requests/outgoing');
   
   if (!response.ok) {
     const error = await response.json();
